@@ -64,7 +64,10 @@ pip install numpy pandas requests watchdog scipy tkinter nbclient nbformat nest_
 #### 🔌 Step 1: Connect Hue Bridge to Network
 
 - Connect the Hue Bridge via LAN cable to your router.
-- Use the **Philips Hue app** to initialize the bridge.
+- Use the **Philips Hue app** in your phone to initialize the bridge.
+- Connect the lights to the Hue Bridge using the app
+- Visit :[https://www.philips-hue.com/en-my/support/connect-hue-product/bulbs-and-lamps#bridge] for more details
+    
 
 #### 🌐 Step 2: Find Bridge IP
 
