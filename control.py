@@ -154,25 +154,8 @@ def finish_baseline():
     baseline_label.config(text=f"Baseline Alpha Power: {baseline_alpha:.2e}")
     baseline_display_label.config(text=f"Baseline Alpha Power: {baseline_alpha:.2e}")
 
-# ---------------------------- NOTEBOOK INTEGRATION ---------------------------- #
-def run_notebook():
-    """Execute supporting EEG notebook automatically on startup."""
-    def task():
-        try:
-            print("Executing EEG decoding notebook...")
-            path_to_nb = os.path.join(os.getcwd(), "eeg_decode_teckfang.ipynb")
-            with open(path_to_nb) as f:
-                nb = nb_read(f, as_version=4)
-                client = NotebookClient(nb, timeout=600)
-                client.execute()
-            print("Notebook execution complete.")
-        except Exception as e:
-            print(f"Notebook execution failed: {e}")
-    threading.Thread(target=task, daemon=True).start()
-
 # ---------------------------- MAIN LOOP ---------------------------- #
 def main():
-    run_notebook()
     print("Monitoring EEG files for updates...")
     base_folder_path = r"C:\\Users\\ttfta\\Documents\\OpenBCI_GUI\\Recordings" # to be changed based on where you save the OpenBCI_GUI recordings
     folder = "OpenBCISession_2025-06-15_22-45-49" # to be change everytime before a trial is start
