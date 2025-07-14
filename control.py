@@ -1,6 +1,3 @@
-# EEG Decode and Light Control with GUI and Hue Integration
-# Author: Teck Fang | Purpose: Control Philips Hue lights using real-time EEG alpha power
-
 import os
 import time
 import numpy as np
@@ -112,7 +109,7 @@ def finish_baseline():
 def poll_latest_file():
     global last_file_size
     base_folder_path = r"C:\\Users\\ttfta\\Documents\\OpenBCI_GUI\\Recordings"
-    folder = "OpenBCISession_2025-07-14_15-52-11"
+    folder = "OpenBCISession_2025-06-15_22-45-49"
     folder_path = os.path.join(base_folder_path, folder)
 
     txt_files = [f for f in os.listdir(folder_path) if f.endswith(".txt")]
