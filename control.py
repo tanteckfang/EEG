@@ -7,8 +7,8 @@ from scipy.signal import welch
 import tkinter as tk
 
 # ---------------------------- CONFIGURATION ---------------------------- #
-BRIDGE_IP = "192.168.226.220"  # Hue Bridge IP
-USERNAME = "ZqKauJLZ3x4je5RxtKnaTAK958AIYRBYmMHNqhEw"
+# BRIDGE_IP = "192.168.226.220"  # Hue Bridge IP
+# USERNAME = "ZqKauJLZ3x4je5RxtKnaTAK958AIYRBYmMHNqhEw"
 COLOR_SEQUENCES = {
     "Sequence 1": (0, 46920),       # Red to Blue
     "Sequence 2": (25500, 12750),   # Green to Yellow
@@ -108,8 +108,9 @@ def finish_baseline():
 # ---------------------------- FILE POLLING ---------------------------- #
 def poll_latest_file():
     global last_file_size
-    base_folder_path = r"C:\\Users\\ttfta\\Documents\\OpenBCI_GUI\\Recordings"
-    folder = "OpenBCISession_2025-06-15_22-45-49"
+    remove_len_s = 1
+    base_folder_path = r"C:/Users/goh_t/Documents/OpenBCI_GUI/Recordings"
+    folder = "OpenBCISession_2025-07-16_10-50-28"
     folder_path = os.path.join(base_folder_path, folder)
 
     txt_files = [f for f in os.listdir(folder_path) if f.endswith(".txt")]
@@ -123,12 +124,29 @@ def poll_latest_file():
     if size != last_file_size:
         last_file_size = size
         try:
-            df = pd.read_csv(latest_file, delimiter=",", skiprows=4, header=None)
-            df.dropna(inplace=True)
-            eeg_only = df.iloc[:, 1:5]
-            if len(eeg_only) >= FS * WINDOW_LEN_S:
-                chunk = eeg_only.tail(FS * WINDOW_LEN_S).astype(float).values
-                process_eeg_chunk(chunk)
+            data = read_data(latest_file)
+            if len(data) >= FS * WINDOW_LEN_S + 10:  # Add buffer
+                text_data = []
+                for i in range(len(data)-int(FS*(WINDOW_LEN_S+2*remove_len_s))-1, len(data)-1):
+                    row = data[i].strip().split(',')
+                    if len(row) >= 5:  # Avoid index error
+                        text_data.append(row)
+                try:
+                    text_array = np.array(text_data)
+                    eeg_only = text_array[:, 1:5].astype(float)
+                    process_eeg_chunk(eeg_only)
+                except Exception as e:
+                    print(f"[PARSE ERROR] {e}")
+            else:
+                print("[INFO] Not enough data yet.")
+            
+            # df = pd.read_csv(latest_file, delimiter=",", skiprows=4, header=None)
+            # df.dropna(inplace=True)
+            # eeg_only = df.iloc[:, 1:5]
+            # if len(eeg_only) >= FS * WINDOW_LEN_S:
+            #     chunk = eeg_only.tail(FS * WINDOW_LEN_S).astype(float).values
+            #     process_eeg_chunk(chunk)
+            
         except Exception as e:
             print(f"[READ ERROR] {e}")
     else:
@@ -136,6 +154,16 @@ def poll_latest_file():
 
     root.after(1000, poll_latest_file)
 
+def read_data(file_path):
+    if not file_path:
+        return []
+
+    lines = []
+    with open(file_path, 'r') as file:
+        lines = file.readlines()
+        
+    return lines
+        
 # ---------------------------- GUI SETUP ---------------------------- #
 root = tk.Tk()
 root.title("EEG Alpha Monitor")
